@@ -2,6 +2,11 @@ import React from "react";
 import Card from "./card";
 
 const CardList = ({ robots }) => {
+  
+  if (true) {
+    throw new Error("Noooo");
+  }
+
   return (
     <div>
       {robots.map((user, i) => {
