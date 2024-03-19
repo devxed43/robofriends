@@ -1,55 +1,56 @@
-import React, { Component } from "react";
+import { useState, useEffect } from "react";
 import CardList from "../components/CardList";
 import SearchBox from "../components/SearchBox";
 import Scroll from "../components/scroll";
-import ErrorBoundry from "./ErrorBoundry";
+// import ErrorBoundry from "./ErrorBoundry";
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      robots: [],
-      searchfield: "",
-    };
-  }
+const App = () => {
+  // State
+  const [robots, setRobots] = useState([]);
+  const [searchfield, setSearchfield] = useState("");
+  const [count, setCount] = useState(0);
 
-  componentDidMount() {
+  // API Fetch
+  useEffect(() => {
     fetch("https://jsonplaceholder.typicode.com/users")
       .then((response) => response.json())
-      .then((users) => this.setState({ robots: users }));
-  }
+      .then((users) => {
+        setRobots(users);
+      });
+  }, []);
 
-  onSearchChange = (e) => {
-    this.setState({ searchfield: e.target.value });
+  // On Search Input Change
+  const onSearchChange = (event) => {
+    setSearchfield(event.target.value);
   };
 
-  render() {
-    const { robots, searchfield } = this.state;
+  const handleClick = () => {
+    setCount(count + 1);
+  };
 
-    const filteredRobots = robots.filter((robot) => {
-      return robot.name.includes(searchfield);
-    });
+  // Filter Robots
+  const filteredRobots = robots.filter((robot) => {
+    return robot.name.toLowerCase().includes(searchfield.toLowerCase());
+  });
 
-    return !robots.length ? (
-      <h1>Loading</h1>
-    ) : (
-      <div className="tc">
-        <h1 className="f1">Robofriends</h1>
-        <SearchBox searchChange={this.onSearchChange} />
-        <Scroll>
-          <ErrorBoundry>
-            <CardList robots={filteredRobots} />
-          </ErrorBoundry>
-        </Scroll>
-      </div>
-    );
-  }
-}
+  // If robots exist checker
+  return !robots.length ? (
+    <h1>Loading</h1>
+  ) : (
+    <div className="tc">
+      <h1 className="f1">Robofriends</h1>
+      {count}
+      <br />
+      <button onClick={handleClick}>Click Me</button>
+      <SearchBox searchChange={onSearchChange} />
+
+      <Scroll>
+        {/* <ErrorBoundry> */}
+        <CardList robots={filteredRobots} />
+        {/* </ErrorBoundry> */}
+      </Scroll>
+    </div>
+  );
+};
 
 export default App;
-
-// we declare state to be empty
-// we listen to what the user types in
-// filtered robots filteres robots and returns the name in lowercase and if it includes the searchfield
-// we give search field component the input changing functionality
-// we give card list to return the filtered robots list
